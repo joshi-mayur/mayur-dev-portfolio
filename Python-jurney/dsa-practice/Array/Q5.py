@@ -1,23 +1,31 @@
 """
-Problem: Pick B elements from either end of the array to maximize their sum.
-
-Given an array A and an integer B, remove exactly B elements from either front or back
-and return the maximum possible sum of those removed elements.
+Optimized Version:
+Pick B elements from either end of array A to maximize their sum.
 
 Approach:
-Try all combinations of taking i elements from the front and (B - i) from the back.
-Calculate the sum for each combination and return the maximum.
+- Precompute prefix sums from the front and back.
+- For each i in range [0, B], try taking i elements from front and (B - i) from back.
+- Use prefix sums to calculate the total in O(1) time per case.
+- Time Complexity: O(B)
 """
 
 def max_sum_from_ends(A, B):
     n = len(A)
-    max_sum = float('-inf')
 
-    # Try all combinations of taking i from front and B-i from back
+    # Compute prefix sums from front
+    prefix_front = [0] * (B + 1)
+    for i in range(1, B + 1):
+        prefix_front[i] = prefix_front[i - 1] + A[i - 1]
+
+    # Compute prefix sums from back
+    prefix_back = [0] * (B + 1)
+    for i in range(1, B + 1):
+        prefix_back[i] = prefix_back[i - 1] + A[-i]
+
+    # Try all combinations
+    max_sum = float('-inf')
     for i in range(B + 1):
-        front = A[:i]             # First i elements
-        back = A[n - (B - i):]    # Last B-i elements
-        current_sum = sum(front) + sum(back)
+        current_sum = prefix_front[i] + prefix_back[B - i]
         max_sum = max(max_sum, current_sum)
 
     return max_sum
